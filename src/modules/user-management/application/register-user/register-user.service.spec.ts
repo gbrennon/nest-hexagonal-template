@@ -33,23 +33,32 @@ describe('RegisterUserService', () => {
   describe('execute', () => {
     it('should register a new user', async () => {
       const user = new User(
-        'uuid',
+        'uuid', // Ensure ID is set here
         'John Doe',
         'john@email.com',
-        '12345678'
+        'hashedPassword' // Hashed password to test the method
       );
       const input = {
         name: user.name,
         email: user.email,
-        password: user.password
+        password: '12345678'
       };
-      when(newUserFactory.create(deepEqual(input))).thenReturn(user);
-      when(userRepository.save(user)).thenResolve();
-      when(passwordHasher.hash(user.password)).thenResolve('hashedPassword');
+
+      when(newUserFactory.create(deepEqual({
+        name: input.name,
+        email: input.email,
+        password: user.password
+      }))).thenReturn(user); // Correctly mock creation
+      when(userRepository.save(user)).thenResolve(); // Mock save method
+      when(passwordHasher.hash(input.password)).thenResolve('hashedPassword'); // Mock password hashing
 
       await service.execute(input);
 
-      verify(newUserFactory.create(input)).once();
+      verify(newUserFactory.create(deepEqual({
+        name: input.name,
+        email: input.email,
+        password: user.password
+      }))).once();
       verify(userRepository.save(user)).once();
     });
 
@@ -58,16 +67,21 @@ describe('RegisterUserService', () => {
         'uuid',
         'John Doe',
         'john@email.com',
-        '12345678'
+        'hashedPassword'
       );
       const input = {
         name: user.name,
         email: user.email,
-        password: user.password
+        password: '12345678'
       };
-      when(newUserFactory.create(deepEqual(input))).thenReturn(user);
+
+      when(newUserFactory.create(deepEqual({
+        name: input.name,
+        email: input.email,
+        password: user.password
+      }))).thenReturn(user);
       when(userRepository.save(user)).thenResolve();
-      when(passwordHasher.hash(user.password)).thenResolve('hashedPassword');
+      when(passwordHasher.hash(input.password)).thenResolve('hashedPassword');
 
       const result = await service.execute(input);
 
@@ -80,16 +94,20 @@ describe('RegisterUserService', () => {
         'uuid',
         'John Doe',
         'john@email.com',
-        '12345678'
+        'hashedPassword'
       );
       const input = {
         name: user.name,
         email: user.email,
-        password: user.password
+        password: '12345678'
       };
 
-      when(newUserFactory.create(deepEqual(input))).thenReturn(user);
-      when(passwordHasher.hash(user.password)).thenResolve('hashedPassword');
+      when(newUserFactory.create(deepEqual({
+        name: input.name,
+        email: input.email,
+        password: user.password
+      }))).thenReturn(user);
+      when(passwordHasher.hash(input.password)).thenResolve('hashedPassword');
       when(userRepository.save(user)).thenReject(new Error('Error'));
 
       await expect(service.execute(input)).rejects.toThrow('Error');
