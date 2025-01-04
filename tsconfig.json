@@ -18,6 +18,7 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
+    "baseUrl": "src/",
     "paths": {
       "@shared/*": ["shared/*"],
       "@user-management/*": ["modules/user-management/*"]
