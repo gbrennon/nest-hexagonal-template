@@ -1,26 +1,27 @@
 import { DataSourceOptions } from "typeorm";
 import { join } from "path";
 import { globSync } from "glob";
-import UserEntity from '../../../modules/user-management/infrastructure/entities/user.entity';
 
 export function getTypeOrmConfig(
   isTestEnvironment: boolean
 ): DataSourceOptions {
 
-  // const entityFiles = globSync(
-  //   join(__dirname, "../../../../**/**/entities/*.ts")
-  // );
+  const entityFiles = globSync(
+    join(__dirname, "../../../../**/**/entities/*.entity.{ts,js}")
+  );
 
-  // const entities = entityFiles
-  //   .map((file) => {
-  //     const schemaModule = require(file);
+  console.log('entityFiles', entityFiles);
 
-  //     return schemaModule.default
-  //   })
-  //   .filter((schema) => schema);
-  const entities = [UserEntity];
+  const entities = entityFiles
+    .map((file) => {
+      // Dynamically import each entity file
+      const schemaModule = require(file);
+      return schemaModule.default;
+    })
+    .filter((schema) => schema);
 
-  // Return configuration based on the environment (Test or Production)
+  console.log('entities', entities);
+
   if (isTestEnvironment) {
     return {
       type: "sqlite",
