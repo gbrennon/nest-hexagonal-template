@@ -10,8 +10,6 @@ export function getTypeOrmConfig(
     join(__dirname, "../../../../**/**/entities/*.entity.{ts,js}")
   );
 
-  console.log('entityFiles', entityFiles);
-
   const entities = entityFiles
     .map((file) => {
       // Dynamically import each entity file
@@ -19,8 +17,6 @@ export function getTypeOrmConfig(
       return schemaModule.default;
     })
     .filter((schema) => schema);
-
-  console.log('entities', entities);
 
   if (isTestEnvironment) {
     return {
