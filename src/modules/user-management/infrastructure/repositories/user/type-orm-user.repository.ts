@@ -3,13 +3,13 @@ import {
   UserRepository
 } from "@user-management/domain/ports/user.repository";
 import { User } from "@user-management/domain/entities/user";
-import UserEntity from "@user-management/infrastructure/entities/user.entity";
+import UserEntity from "../../entities/user.entity";
 import {
   UserDomainSchemaMapper
-} from "@user-management/infrastructure/mappers/user-domain-schema/user-domain-schema.mapper";
+} from "../../mappers/user-domain-schema/user-domain-schema.mapper";
 import {
   UserSchemaDomainMapper
-} from "@user-management/infrastructure/mappers/user-schema-domain/user-schema-domain.mapper";
+} from "../../mappers/user-schema-domain/user-schema-domain.mapper";
 
 export class TypeORMUserRepository implements UserRepository {
   constructor(
