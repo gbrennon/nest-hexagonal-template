@@ -11,6 +11,7 @@ import {
 } from "@user-management/infrastructure/mappers/user-schema-domain/user-schema-domain.mapper";
 import UserEntity from "@user-management/infrastructure/entities/user.entity";
 import { User } from "@user-management/domain/entities/user";
+import { ConflictException } from "@nestjs/common";
 
 describe('TypeORMUserRepository Integration Test', () => {
   let repository: TypeORMUserRepository;
@@ -83,13 +84,13 @@ describe('TypeORMUserRepository Integration Test', () => {
       expect(savedUserEntity!.password).toEqual(fakeUser.password);
     });
 
-    it('should throw an error if the email already exists', async () => {
+    it('should throw ConflictException if the email already exists', async () => {
       await repository.save(fakeUser);
 
       const duplicateUser = new User('uuid456', 'Jane Doe', fakeUser.email, 'anotherpassword');
 
       await expect(repository.save(duplicateUser)).rejects.toThrow(
-        /SQLITE_CONSTRAINT: UNIQUE constraint failed: users.email/
+        new ConflictException('User already exists')
       );
     });
   });

@@ -1,4 +1,5 @@
 import { EntityManager } from "typeorm";
+import { ConflictException } from '@nestjs/common';
 import {
   UserRepository
 } from "@user-management/domain/ports/user.repository";
@@ -34,6 +35,22 @@ export class TypeORMUserRepository implements UserRepository {
   async save(user: User): Promise<void> {
     const userEntity = this.userDomainSchemaMapper.map(user);
 
-    await this.entityManager.save(userEntity);
+    try {
+      await this.entityManager.save(userEntity);
+    } catch (error) {
+      if(this.isUniqueConstraintViolation(error)) {
+        throw new ConflictException('User already exists');
+      }
+    }
+  }
+
+  private isUniqueConstraintViolation(error: any): boolean {
+        // PostgreSQL error code for unique violation
+    const isPostgresUniqueViolation = error.code === '23505'; 
+
+    // SQLite error code for unique violation
+    const isSQLiteUniqueViolation = error.code === 'SQLITE_CONSTRAINT' && error.message.includes('UNIQUE');
+
+    return isPostgresUniqueViolation || isSQLiteUniqueViolation;
   }
 }
