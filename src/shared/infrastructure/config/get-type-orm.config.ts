@@ -1,6 +1,7 @@
 import { DataSourceOptions } from "typeorm";
 import { join } from "path";
 import { globSync } from "glob";
+import { dbConfig } from "@shared/config/db.config";
 
 export function getTypeOrmConfig(
   isTestEnvironment: boolean
@@ -30,11 +31,11 @@ export function getTypeOrmConfig(
 
   return {
     type: "postgres",
-    host: process.env.DATABASE_HOST || "localhost",
-    port: parseInt(process.env.DATABASE_PORT || "5432", 10),
-    username: process.env.DATABASE_USERNAME || "postgres",
-    password: process.env.DATABASE_PASSWORD || "password",
-    database: process.env.DATABASE_NAME || "hexagonal_nest_database",
+    host: dbConfig.host,
+    port: dbConfig.port,
+    username: dbConfig.username,
+    password: dbConfig.password,
+    database: dbConfig.database,
     synchronize: true,
     logging: true,
     entities: entities,
